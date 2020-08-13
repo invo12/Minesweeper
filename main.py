@@ -67,11 +67,6 @@ if __name__ == '__main__':
 
     initGraphics(board, root)
     board.initBoard()
-    for l in board.squares:
-        print('[',end=' ')
-        for s in l:
-            print('('+ str(s.getX()) + ',' + str(s.getY()) + ')',end=' ')
-        print('],')
     t = Thread(target=checkIfGameIsOver,args=[board,root,])
     t.daemon = True
     t.start()

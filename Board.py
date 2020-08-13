@@ -51,10 +51,9 @@ class Board:
             if self.squares[y][x].isActive() and (not self.squares[y][x].hasBomb()):
                 self.squares[y][x].checkButton()
                 if self.squares[y][x].number == 0:
-                    self.__revealSurroundings(x - 1, y)
-                    self.__revealSurroundings(x, y - 1)
-                    self.__revealSurroundings(x + 1, y)
-                    self.__revealSurroundings(x, y + 1)
+                    for i in range(x - 1, x + 2):
+                        for j in range(y - 1, y + 2):
+                            self.__revealSurroundings(i, j)
 
     def __placeBombs(self):
         for i in range(self.numberOfBombs):
