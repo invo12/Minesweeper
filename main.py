@@ -4,6 +4,7 @@ from functools import partial
 from Board import Board
 from threading import Thread
 import time
+
 def initGraphics(board, root):
     root.geometry(str(windowWidth) + 'x' + str(windowHeight))
     ws = root.winfo_screenwidth()
@@ -17,14 +18,14 @@ def initGraphics(board, root):
     Grid.columnconfigure(root, 0, weight=1)
     frame.grid(row=0, column=0, sticky=N + S + E + W)
     grid = Frame(frame)
-    grid.grid(sticky=N + S + E + W, column=0, row=7, columnspan = 5)
+    grid.grid(sticky=N + S + E + W, column=0, row=7, columnspan=5)
     Grid.rowconfigure(frame, 7, weight=1)
     Grid.columnconfigure(frame, 0, weight=1)
 
     # example values
     for x in range(board.columns):
         for y in range(board.lines):
-            f = partial(board.checkIfHasMine, x, y)
+            f = partial(startGame, x, y)
             btn = Button(frame, fg='blue', command=f, width=1, height=1)
             btn['activebackground'] = '#AC8C5D'
             btn['background'] = '#AF9164'
@@ -38,7 +39,18 @@ def initGraphics(board, root):
     for y in range(board.lines):
         Grid.rowconfigure(frame, y, weight=1)
 
-def checkIfGameIsOver(board,root):
+    return frame
+def startGame(a, b):
+    for x in range(board.columns):
+        for y in range(board.lines):
+            f = partial(board.checkIfHasMine, x, y)
+            board.squares[y][x].btn["command"] = f
+    board.start = [(a, b)]
+    board.initBoard()
+    board.checkIfHasMine(a, b)
+
+
+def checkIfGameIsOver(board, root, frame):
     while 1:
         if board.checkIfWin():
             popup_bonus("You Won!")
@@ -47,6 +59,7 @@ def checkIfGameIsOver(board,root):
             popup_bonus("You Lost!")
             break
         time.sleep(1)
+    frame.destroy()
 
 def popup_bonus(name):
     win = Toplevel()
@@ -58,16 +71,16 @@ def popup_bonus(name):
 
     b = Button(win, text="Okay", command=root.destroy)
     b.grid(row=1, column=0)
-if __name__ == '__main__':
 
+
+if __name__ == '__main__':
     windowWidth = 400
     windowHeight = 600
     board = Board()
     root = Tk()
 
-    initGraphics(board, root)
-    board.initBoard()
-    t = Thread(target=checkIfGameIsOver,args=[board,root,])
+    frame = initGraphics(board, root)
+    t = Thread(target=checkIfGameIsOver, args=[board, root, frame, ])
     t.daemon = True
     t.start()
     root.mainloop()
